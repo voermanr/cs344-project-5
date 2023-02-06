@@ -55,6 +55,20 @@ void llist_insert_tail(struct node **head, struct node *n) {
     tail->next = n;
 }
 
+void llist_free(struct node **head) {
+    struct node *cur_node = *head;
+    struct node *next = cur_node->next;
+
+    while (next) {
+        node_free(cur_node);
+        cur_node = next;
+        next = cur_node->next;
+    }
+    node_free(cur_node);
+
+    *head = NULL;
+}
+
 int main() {
 
     //Structure Tests
