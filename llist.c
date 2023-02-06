@@ -78,4 +78,6 @@ int main() {
 
     node_free(llist_delete_head(&link_list2));
     llist_print(link_list2);
+    llist_insert_tail(&link_list2, node_alloc(10));
+    llist_print(link_list2);
 }
