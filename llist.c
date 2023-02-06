@@ -94,4 +94,7 @@ int main() {
     llist_print(link_list2);
     llist_insert_tail(&link_list2, node_alloc(10));
     llist_print(link_list2);
+
+    llist_free(&link_list2);
+    llist_print(link_list2);
 }
