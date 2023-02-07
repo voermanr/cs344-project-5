@@ -2,6 +2,13 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <printf.h>
+#include <string.h>
+
+#ifndef DEBUG
+#define DEBUG 0
+#endif
+
+int tests();
 
 struct node *node_alloc(int value) {
     struct node *allocated_node = (struct node *) malloc(sizeof(struct node));
@@ -26,7 +33,7 @@ void llist_print(struct node *head) {
         printf("\n");
     }
     else
-        printf("[empty]");
+        printf("[empty]\n");
 }
 
 void llist_insert_head(struct node **head, struct node *n) {
@@ -47,6 +54,11 @@ struct node *llist_delete_head(struct node **head) {
 }
 
 void llist_insert_tail(struct node **head, struct node *n) {
+    if (!*head) {
+        *head = n;
+        return;
+    }
+
     struct node *tail = *head;
     while (tail->next) {
         tail = tail->next;
@@ -69,7 +81,38 @@ void llist_free(struct node **head) {
     *head = NULL;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    //TODO: argv validation
+
+    if (argc < 2){
+        exit(EXIT_FAILURE);
+    }
+    struct node *list_head = NULL;
+    if (DEBUG) tests();
+
+    argv++;
+
+    while(*argv){
+        if (!strcmp(*argv,"ih")) {
+            argv++;
+            llist_insert_head(&list_head, node_alloc(atoi(*argv)));
+        } else if (!strcmp(*argv,"it")) {
+            argv++;
+            llist_insert_tail(&list_head, node_alloc(atoi(*argv)));
+        } else if (!strcmp(*argv, "dh")) {
+            if(list_head) llist_delete_head(&list_head);
+        }
+        else if (!strcmp(*argv, "f")) {
+            llist_free(&list_head);
+        }
+        else if (!strcmp(*argv,"p")){
+            llist_print(list_head);
+        }
+        argv++;
+    }
+}
+
+int tests() {
 
     //Structure Tests
     assert(node_alloc(69)->value == 69);
@@ -97,4 +140,6 @@ int main() {
 
     llist_free(&link_list2);
     llist_print(link_list2);
+
+    return 0;
 }
