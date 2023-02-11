@@ -19,6 +19,8 @@ struct node *node_alloc(int value) {
 }
 
 void node_free(struct node *n) {
+    n->next = NULL;
+    n->value = '\0';
     free(n);
 }
 
@@ -48,6 +50,10 @@ void llist_insert_head(struct node **head, struct node *n) {
 }
 
 struct node *llist_delete_head(struct node **head) {
+    // NULL checking
+    if (!*head) {
+        return NULL;
+    }
     struct node *old_head = *head;
     *head = old_head->next;
 
@@ -69,16 +75,18 @@ void llist_insert_tail(struct node **head, struct node *n) {
 }
 
 void llist_free(struct node **head) {
-    struct node *cur_node = *head;
-    struct node *next = cur_node->next;
+    if (!(*head)) {
+        return;
+    }
+    struct node *next = (*head)->next;
 
     while (next) {
-        node_free(cur_node);
-        cur_node = next;
-        next = cur_node->next;
+        node_free(*head);
+        *head = NULL;
+        *head = next;
+        next = (*head)->next;
     }
-    node_free(cur_node);
-
+    node_free(*head);
     *head = NULL;
 }
 
@@ -88,6 +96,7 @@ int main(int argc, char *argv[]) {
     rubric_tests();
 
     if (argc < 2){
+        perror("use more arguments");
         exit(EXIT_FAILURE);
     }
     struct node *list_head = NULL;
