@@ -9,6 +9,7 @@
 #endif
 
 int tests();
+int rubric_tests();
 
 struct node *node_alloc(int value) {
     struct node *allocated_node = (struct node *) malloc(sizeof(struct node));
@@ -82,13 +83,15 @@ void llist_free(struct node **head) {
 }
 
 int main(int argc, char *argv[]) {
-    //TODO: argv validation
+
+    if (DEBUG) tests();
+    rubric_tests();
 
     if (argc < 2){
         exit(EXIT_FAILURE);
     }
     struct node *list_head = NULL;
-    if (DEBUG) tests();
+
 
     argv++;
 
@@ -141,5 +144,135 @@ int tests() {
     llist_free(&link_list2);
     llist_print(link_list2);
 
+
+
     return 0;
 }
+
+int rubric_tests() {
+
+    //llist_insert_head functions on empty list
+    {
+        struct node *empty_linked_list = NULL;
+        struct node *test_node = node_alloc(1);
+        llist_insert_head(&empty_linked_list, test_node);
+        assert(empty_linked_list == test_node);
+    }
+
+    //llist_insert_head functions on non-empty list
+    {
+        struct node *non_empty_linked_list = node_alloc(1);
+        struct node *test_node = node_alloc(2);
+        llist_insert_head(&non_empty_linked_list, test_node);
+        assert(non_empty_linked_list == test_node);
+    }
+
+    //llist_delete_head returns NULL on empty list
+    {
+        struct node *empty_linked_list = NULL;
+        assert(llist_delete_head(&empty_linked_list) == NULL);
+    }
+
+    //llist_delete_head functions on non-empty list
+    {
+        struct node *chopable_head_node = node_alloc(1);
+        struct node *non_empty_linked_list = chopable_head_node;
+
+        struct node *incumbent_head_node= node_alloc(2);
+        llist_insert_tail(&non_empty_linked_list, incumbent_head_node);
+
+        assert((llist_delete_head(&non_empty_linked_list) == chopable_head_node) &&
+            non_empty_linked_list == incumbent_head_node);
+    }
+
+    //llist_insert_tail functions on empty list
+    {
+        struct node *empty_linked_list = NULL;
+        struct node *test_node = node_alloc(1);
+
+        llist_insert_tail(&empty_linked_list, test_node);
+
+        assert(empty_linked_list == test_node);
+    }
+
+    //llist_insert_tail functions on non-empty list
+    {
+        struct node *head = node_alloc(1);
+        struct node *non_empty_linked_list = head;
+
+        struct node *insertable_tail = node_alloc(9);
+        llist_insert_tail(&non_empty_linked_list, insertable_tail);
+
+        assert(non_empty_linked_list->next == insertable_tail);
+    }
+
+    //llist_free frees all nodes
+    {
+        struct node *head_node = node_alloc(1);
+        struct node *body_node = node_alloc(2);
+        struct node *tail_node = node_alloc(3);
+
+        struct node *non_empty_linked_list = head_node;
+        non_empty_linked_list->next = body_node;
+        non_empty_linked_list->next->next = tail_node;
+
+        llist_free(&non_empty_linked_list);
+
+        //I couldn't get this to work. I think I would have to change the way the functions are defined though.
+        //assert(head_node == NULL &&
+        //    body_node == NULL &&
+        //    tail_node == NULL);
+    }
+
+    //llist_free sets head to NULL
+    {
+        struct node *head_node = node_alloc(1);
+
+        struct node *non_empty_linked_list = head_node;
+
+        llist_free(&non_empty_linked_list);
+        assert(non_empty_linked_list == NULL);
+
+        //This test made me refactor my code. +1 for TDD.
+    }
+
+    //llist_free works on empty list
+    {
+        struct node *empty_linked_list = NULL;
+        llist_free(&empty_linked_list);
+
+        assert(empty_linked_list == NULL);
+    }
+
+    //llist_print prints correctly
+    {
+        struct node *linked_list = node_alloc(1);
+        linked_list->next = node_alloc(2);
+
+        //I think I need to fork a process and redirect std out to a string I can test
+        //That might be too much.
+    }
+
+    //node_alloc properly allocates and initializes a node
+    {
+        struct node *test_node = node_alloc(1);
+        assert(test_node->next == NULL && test_node->value == 1);
+    }
+
+    //node_free properly frees the node
+    {
+        struct node *the_gordon_freeman_of_nodes = node_alloc(3);
+        node_free(the_gordon_freeman_of_nodes);
+
+        //How do I test this?
+    }
+
+    //command line 'ih' command functions properly &&
+    //command line 'ih' command functions properly &&
+    //command line 'ih' command functions properly &&
+    //command line 'ih' command functions properly &&
+    //command line 'ih' command functions properly
+    // How do I test command line arguments from within C?
+    return 0;
+}
+
